@@ -31,6 +31,8 @@ void get_filetype(char* filename, char* filetype)
     strncpy(filetype, "image/png", MAXLINE);
   else if (strstr(filename, ".jpg"))
     strncpy(filetype, "image/jpg", MAXLINE);
+  else if (strstr(filename, ".ico"))
+    strncpy(filetype, "image/x-icon", MAXLINE);
   else
     strncpy(filetype, "text/plain", MAXLINE);
 }
@@ -58,9 +60,9 @@ void serve_static(int fd, char* filename, int filesize)
   rio_writen(fd, buf, strlen(buf));
   printf("%s", buf);
   /* Hacky fix for warning */
-  snprintf(buf, MAXLINE + 17, "Content-type: %s\r\n", filetype);
+  snprintf(buf, MAXLINE + 19, "Content-type: %s\r\n\r\n", filetype);
   rio_writen(fd, buf, strlen(buf));
-  printf("%s\n", buf);
+  printf("%s", buf);
 
   /* Send response body */
   srcfd = open(filename, O_RDONLY, 0);
@@ -81,7 +83,7 @@ int parse_uri(char* uri, char* filename, char* cgiargs)
     strcat(filename, uri);
 
     if (uri[strlen(uri) - 1] == '/') {
-      strcat(filename, "home.html");
+      strcat(filename, "index.html");
     }
 
     return 1;
